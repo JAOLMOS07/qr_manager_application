@@ -81,7 +81,7 @@ class LoginForm extends StatelessWidget {
           // Botones
           ElevatedButton(
             onPressed: () {
-              Get.toNamed('/welcome');
+              Get.toNamed('/content/list');
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 100),
