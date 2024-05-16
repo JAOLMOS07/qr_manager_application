@@ -132,7 +132,7 @@ class CustomLinkItem extends StatelessWidget {
             "Suscripción: ${subscriptionTypes[link.subscriptionType]}",
             style: TextStyle(fontSize: 14),
           ),
-          trailing: Icon(Icons.arrow_forward_ios),
+          trailing: Icon(Icons.add_link),
           onTap: () {
             linkController.selectLink(link); // Seleccionar el enlace
             Get.toNamed('/link/assign');

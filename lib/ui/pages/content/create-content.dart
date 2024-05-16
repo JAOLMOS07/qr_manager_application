@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:qr_manager_application/domain/controllers/content_controller.dart';
-import 'package:qr_manager_application/services/content_service.dart';
 
 class AddContentPage extends StatefulWidget {
   @override
@@ -30,7 +29,9 @@ class _AddContentPageState extends State<AddContentPage> {
               controller: titleController,
               decoration: InputDecoration(
                 labelText: 'Title',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
             SizedBox(height: 10),
@@ -38,7 +39,9 @@ class _AddContentPageState extends State<AddContentPage> {
               controller: descriptionController,
               decoration: InputDecoration(
                 labelText: 'Description',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
             SizedBox(height: 10),
@@ -46,7 +49,9 @@ class _AddContentPageState extends State<AddContentPage> {
               controller: logoController,
               decoration: InputDecoration(
                 labelText: 'Logo URL',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
             SizedBox(height: 10),
@@ -54,7 +59,9 @@ class _AddContentPageState extends State<AddContentPage> {
               controller: multimediaController,
               decoration: InputDecoration(
                 labelText: 'Multimedia URL',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
             SizedBox(height: 20),
