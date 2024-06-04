@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "227020465043",
+    "project_id": "qr-manager-3dabf",
+    "storage_bucket": "qr-manager-3dabf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:227020465043:android:eefeb58b589d7fa439be66",
+        "android_client_info": {
+          "package_name": "com.example.qr_manager_application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "227020465043-jcppv59h2c64fi5j5dph0tsvft3ftest.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1k_y_jkht1vsPm9SORkcke2POIP-NF24"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "227020465043-jcppv59h2c64fi5j5dph0tsvft3ftest.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

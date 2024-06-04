@@ -1,14 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:qr_manager_application/domain/controllers/link_controller.dart';
+import 'package:qr_manager_application/domain/models/link.dart';
+import 'package:qr_manager_application/services/link_service.dart';
 
-class CreateQrCodePage extends StatelessWidget {
+class CreateQrCodePage extends StatefulWidget {
+  const CreateQrCodePage({Key? key}) : super(key: key);
+
+  @override
+  _CreateQrCodePageState createState() => _CreateQrCodePageState();
+}
+
+class _CreateQrCodePageState extends State<CreateQrCodePage> {
   final List<String> options = ['Anual', 'Mensual', 'Vitalicio'];
-  final LinkController linkController = Get.find<LinkController>();
-  String selectedOption = 'Anual';
+  final FireStoreLinkService _fireStoreLinkService = FireStoreLinkService();
 
-  CreateQrCodePage({Key? key}) : super(key: key);
+  String selectedOption = 'Anual';
+  Future<void> _createLink() async {
+    final link = Link(
+      contentId: null,
+      contentTitle: null,
+      lastRenewalDate: DateTime.now().toString(),
+      subscriptionType: options.indexOf(selectedOption),
+      active: true,
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      createdOn: DateTime.now(),
+      lastModifiedOn: DateTime.now(),
+    );
+
+    await _fireStoreLinkService.addLink(link);
+    Get.back();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +56,9 @@ class CreateQrCodePage extends StatelessWidget {
               value: selectedOption,
               onChanged: (String? value) {
                 if (value != null) {
-                  selectedOption = value;
+                  setState(() {
+                    selectedOption = value;
+                  });
                 }
               },
               items: options.map<DropdownMenuItem<String>>((String value) {
@@ -58,10 +82,7 @@ class CreateQrCodePage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                linkController.createLink(options.indexOf(selectedOption));
-                Get.back();
-              },
+              onPressed: _createLink,
               child: Text('Enviar'),
             ),
           ],

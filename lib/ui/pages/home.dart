@@ -3,7 +3,7 @@ import 'package:qr_manager_application/ui/pages/content/content-list.dart';
 import 'package:qr_manager_application/ui/pages/qrcode/qrcode-list.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -14,7 +14,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     ContentListPage(),
-    QrCodeListPage(),
+    LinkListPage(),
     ContentListPage()
   ];
 
@@ -50,7 +50,8 @@ class _HomePageState extends State<HomePage> {
     return BottomNavigationBarItem(
         icon: Icon(
           icon,
-          color: isActive ? Color.fromARGB(255, 15, 34, 158) : Colors.grey,
+          color:
+              isActive ? const Color.fromARGB(255, 15, 34, 158) : Colors.grey,
         ),
         label: txtlabel);
   }

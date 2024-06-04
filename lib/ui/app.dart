@@ -16,7 +16,7 @@ class App extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(),
-      title: 'WhatsApp',
+      title: 'QrManager',
       initialRoute: '/welcome',
       routes: {
         '/welcome': (context) => WelcomePage(),

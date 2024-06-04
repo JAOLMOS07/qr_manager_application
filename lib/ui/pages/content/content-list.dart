@@ -1,84 +1,126 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qr_manager_application/domain/controllers/content_controller.dart';
 import 'package:qr_manager_application/domain/models/content.dart';
+import 'package:qr_manager_application/services/content_service.dart';
 
-class ContentListPage extends StatelessWidget {
-  final ContentController contentController = Get.find<ContentController>();
+class ContentListPage extends StatefulWidget {
+  const ContentListPage({super.key});
+
+  @override
+  _ContentListPageState createState() => _ContentListPageState();
+}
+
+class _ContentListPageState extends State<ContentListPage> {
   final TextEditingController _searchController = TextEditingController();
+  final FireStoreContentService fireStoreContentService =
+      FireStoreContentService();
+  List<Content> _contents = [];
+  List<Content> _allContents = [];
+  bool _isLoading = true;
 
-  ContentListPage({super.key});
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchContents();
+  }
+
+  Future<void> _fetchContents() async {
+    setState(() {
+      _isLoading = true;
+    });
+    _allContents = await fireStoreContentService.getContents();
+    _contents = List.from(_allContents);
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _filterContents(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        _contents = List.from(_allContents);
+      });
+    } else {
+      setState(() {
+        _contents = _allContents.where((content) {
+          return content.title.toLowerCase().contains(query.toLowerCase()) ||
+              content.description.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GetBuilder<ContentController>(
-          builder: (ContentController) => Stack(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/fondo1.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Positioned.fill(
-                    child: Image.asset(
-                      'assets/fondo1.png',
-                      fit: BoxFit.cover,
+                  TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      _filterContents(value);
+                    },
+                    style: TextStyle(
+                      color: Color.fromARGB(251, 89, 123, 236),
+                      fontWeight: FontWeight.w300,
+                    ),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      filled: true,
+                      hintStyle: TextStyle(
+                        color: Color.fromARGB(184, 89, 123, 236),
+                      ),
+                      hintText: "Buscar contenido",
+                      fillColor: Color.fromARGB(255, 255, 255, 255),
+                      prefixIcon: Icon(Icons.search),
                     ),
                   ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          TextField(
-                            controller: _searchController,
-                            onChanged: (value) {
-                              contentController.filterContents(value);
-                            },
-                            style: TextStyle(
-                              color: Color.fromARGB(251, 89, 123, 236),
-                              fontWeight: FontWeight.w300,
-                            ),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20.0),
+                  SizedBox(height: 20),
+                  Expanded(
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: _isLoading
+                            ? Center(child: CircularProgressIndicator())
+                            : ListView.builder(
+                                itemCount: _contents.length,
+                                itemBuilder: (context, index) {
+                                  return CustomContentItem(
+                                    content: _contents[index],
+                                  );
+                                },
                               ),
-                              filled: true,
-                              hintStyle: TextStyle(
-                                color: Color.fromARGB(184, 89, 123, 236),
-                              ),
-                              hintText: "Buscar contenido",
-                              fillColor: Color.fromARGB(255, 255, 255, 255),
-                              prefixIcon: Icon(Icons.search),
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          Expanded(
-                            child: Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ListView.builder(
-                                  itemCount:
-                                      contentController.filteredcontents.length,
-                                  itemBuilder: (context, index) {
-                                    final content = contentController
-                                        .filteredcontents[index];
-                                    return CustomContentItem(content: content);
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ),
                   ),
                 ],
-              )),
+              ),
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.toNamed('/content/create');
+        onPressed: () async {
+          await Get.toNamed('/content/create');
+          _fetchContents();
         },
         child: const Icon(Icons.add),
       ),

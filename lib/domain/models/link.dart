@@ -1,13 +1,13 @@
 class Link {
-  final String? contentId;
-  final String? contentTitle;
-  final String lastRenewalDate;
-  final int subscriptionType;
-  final bool active;
-  final String id;
-  final DateTime? deletedOn;
-  final DateTime createdOn;
-  final DateTime lastModifiedOn;
+  String? contentId;
+  String? contentTitle;
+  String lastRenewalDate;
+  int subscriptionType;
+  bool active;
+  String id;
+  DateTime? deletedOn;
+  DateTime createdOn;
+  DateTime lastModifiedOn;
 
   Link({
     this.contentId,

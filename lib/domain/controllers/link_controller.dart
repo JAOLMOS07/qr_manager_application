@@ -1,11 +1,8 @@
 import 'package:get/get.dart';
 import 'package:qr_manager_application/domain/models/content.dart';
 import 'package:qr_manager_application/domain/models/link.dart';
-import 'package:qr_manager_application/services/link_service.dart';
 
 class LinkController extends GetxController {
-  final LinkService _linkService = LinkService();
-
   List<Link> links = <Link>[].obs;
   List<Link> filteredLinks = <Link>[].obs;
   Link? selectedLink; // Enlace seleccionado
@@ -21,20 +18,9 @@ class LinkController extends GetxController {
     update();
   }
 
-  Future<void> fetchLinks() async {
-    links = await _linkService.fetchLinks();
-    filteredLinks = links;
-    update();
-  }
+  Future<void> fetchLinks() async {}
 
-  Future<void> createLink(int subscriptionType) async {
-    try {
-      await _linkService.createLink(subscriptionType);
-      fetchLinks(); // Actualiza la lista de enlaces después de crear uno nuevo
-    } catch (e) {
-      print('Error creating link: $e');
-    }
-  }
+  Future<void> createLink(int subscriptionType) async {}
 
   void filterLinks(String searchText) {
     if (searchText.isEmpty) {
@@ -53,12 +39,5 @@ class LinkController extends GetxController {
     update(); // Actualizar la interfaz de usuario con los enlaces filtrados
   }
 
-  Future<void> assignContent(Link link, Content content) async {
-    try {
-      await _linkService.assignContent(link, content);
-      fetchLinks();
-    } catch (e) {
-      print('Error creating link: $e');
-    }
-  }
+  Future<void> assignContent(Link link, Content content) async {}
 }

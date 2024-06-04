@@ -3,8 +3,6 @@ import 'package:qr_manager_application/domain/models/content.dart';
 import 'package:qr_manager_application/services/content_service.dart';
 
 class ContentController extends GetxController {
-  final ContentService _contentService = ContentService();
-
   List<Content> contents = <Content>[].obs;
   List<Content> filteredcontents = <Content>[].obs;
 
@@ -14,11 +12,7 @@ class ContentController extends GetxController {
     fetchAndSetContents();
   }
 
-  Future<void> fetchAndSetContents() async {
-    contents = await _contentService.fetchContents();
-    filteredcontents = contents;
-    update();
-  }
+  Future<void> fetchAndSetContents() async {}
 
   void filterContents(String searchText) {
     if (searchText.isEmpty) {
@@ -33,12 +27,5 @@ class ContentController extends GetxController {
   }
 
   void createContent(String title, String description, String logo,
-      List<String> multimedia) async {
-    try {
-      await _contentService.createContent(title, description, logo, multimedia);
-      fetchAndSetContents();
-    } catch (error) {
-      print('Error creating content: $error');
-    }
-  }
+      List<String> multimedia) async {}
 }

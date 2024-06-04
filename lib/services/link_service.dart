@@ -1,55 +1,70 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:qr_manager_application/domain/models/content.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:qr_manager_application/domain/models/link.dart';
 
-class LinkService {
-  static const String apiUrl = 'https://localhost:7001/Link';
+class FireStoreLinkService {
+  final CollectionReference _linksCollection =
+      FirebaseFirestore.instance.collection('links');
+  Link? _selectedLink;
+  void setSelectedLink(Link link) {
+    _selectedLink = link;
+  }
 
-  Future<List<Link>> fetchLinks() async {
-    final response = await http.get(Uri.parse(apiUrl));
+  Link? getSelectedLink() {
+    return _selectedLink;
+  }
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Link.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load links');
+  // Método para obtener todos los links
+  Future<List<Link>> getLinks() async {
+    QuerySnapshot querySnapshot = await _linksCollection.get();
+    return querySnapshot.docs.map((doc) {
+      return Link.fromJson(doc.data() as Map<String, dynamic>);
+    }).toList();
+  }
+
+  Future<Link?> getLinkById(String linkId) async {
+    try {
+      DocumentSnapshot documentSnapshot =
+          await _linksCollection.doc(linkId).get();
+      if (documentSnapshot.exists) {
+        return Link.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching link by id: $e');
+      return null;
     }
   }
 
-  Future<void> createLink(int subscriptionType) async {
-    final Map<String, dynamic> linkData = {
+  // Método para agregar un nuevo link
+  Future<void> addLink(Link link) async {
+    await _linksCollection.doc(link.id).set(link.toJson());
+  }
+
+  // Método para actualizar un link existente
+  Future<void> updateLink(Link link) async {
+    await _linksCollection.doc(link.id).update(link.toJson());
+  }
+
+  // Método para eliminar un link
+  Future<void> deleteLink(String id) async {
+    await _linksCollection.doc(id).delete();
+  }
+}
+
+// Extensión para convertir un Link a un Map (JSON)
+extension LinkExtension on Link {
+  Map<String, dynamic> toJson() {
+    return {
+      'contentId': contentId,
+      'contentTitle': contentTitle,
+      'lastRenewalDate': lastRenewalDate,
       'subscriptionType': subscriptionType,
+      'active': active,
+      'id': id,
+      'deletedOn': deletedOn?.toIso8601String(),
+      'createdOn': createdOn.toIso8601String(),
+      'lastModifiedOn': lastModifiedOn.toIso8601String(),
     };
-
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(linkData),
-    );
-
-    if (response.statusCode != 202) {
-      throw Exception('Failed to create link');
-    }
-  }
-
-  Future<void> assignContent(Link link, Content content) async {
-    final Map<String, dynamic> linkData = {
-      'contentId': content.id,
-    };
-
-    final response = await http.patch(
-      Uri.parse("$apiUrl/${link.id}"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(linkData),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Failed to create link');
-    }
   }
 }
