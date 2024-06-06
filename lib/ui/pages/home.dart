@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     ContentListPage(),
     LinkListPage(),
-    ContentListPage(),
+    ConfigUserPage(),
     ConfigUserPage(),
   ];
 

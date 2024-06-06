@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_manager_application/services/auth_service.dart';
+import 'package:quickalert/quickalert.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -103,7 +104,15 @@ class _LoginFormState extends State<LoginForm> {
 
               if (user != null) {
                 Get.toNamed('/content/list');
-              } else {}
+              } else {
+                QuickAlert.show(
+                  context: context,
+                  type: QuickAlertType.error,
+                  title: 'Oops...',
+                  text: 'Creenciales inválidas',
+                  confirmBtnText: 'Ok',
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 100),

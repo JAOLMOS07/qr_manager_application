@@ -123,7 +123,9 @@ class _RegisterFormState extends State<RegisterForm> {
           ElevatedButton(
             onPressed: () async {
               UserCredential? user = await authService.SingUp(
-                  _usernameController.text, _passwordController.text);
+                  _nameController.text,
+                  _usernameController.text,
+                  _passwordController.text);
               if (user != null) {
                 Get.toNamed('/content/list');
               }

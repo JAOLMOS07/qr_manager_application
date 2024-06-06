@@ -33,11 +33,14 @@ class AuthService {
     return user;
   }
 
-  Future<UserCredential?> SingUp(String email, String password) async {
+  Future<UserCredential?> SingUp(
+      String name, String email, String password) async {
     UserCredential? user;
     try {
       user = (await _auth.createUserWithEmailAndPassword(
           email: email.trim(), password: password));
+
+      await user.user?.updateDisplayName(name);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No se encontró ningún usuario para ese correo electrónico.');
