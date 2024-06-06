@@ -145,7 +145,7 @@ class CustomLinkItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5),
       child: Container(
-        height: 100,
+        height: 90,
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 255, 255, 255),
           borderRadius: BorderRadius.circular(15),
@@ -153,28 +153,53 @@ class CustomLinkItem extends StatelessWidget {
         child: ListTile(
           contentPadding:
               const EdgeInsets.symmetric(vertical: 16, horizontal: 5),
-          leading: const SizedBox(
+          leading: SizedBox(
             width: 80,
             height: 80,
             child: CircleAvatar(
               radius: 40,
-              backgroundColor: Colors
-                  .blue, // Puede ser cualquier color o imagen según el link
-              child: const Icon(Icons.link, color: Colors.white),
+              backgroundImage: NetworkImage(link.contentLogoUrl ??
+                  "https://firebasestorage.googleapis.com/v0/b/qr-manager-3dabf.appspot.com/o/white.png?alt=media&token=5d2d9dad-d2c7-4707-8c5f-3f698d1da352"), // Puede ser cualquier color o imagen según el link
+              child: Container(
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(129, 255, 255, 255),
+                  borderRadius: BorderRadius.circular(20.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 2,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  link.contentId != null
+                      ? Icons.qr_code_2_outlined
+                      : Icons.link,
+                  color: link.contentId != null
+                      ? Color.fromARGB(255, 88, 88, 88)
+                      : Color.fromARGB(205, 35, 35, 35),
+                  size: 30,
+                ),
+              ),
             ),
           ),
           title: Text(
-            link.contentTitle ?? 'Sin título',
+            link.contentTitle ?? 'Asignar contenido',
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
           subtitle: Text(
-            'Última renovación: ${link.lastRenewalDate}',
-            style: const TextStyle(fontSize: 14),
+            '${link.lastRenewalDate}',
+            style: const TextStyle(fontSize: 10),
           ),
-          trailing: const Icon(Icons.arrow_forward_ios),
+          trailing: Icon(link.contentId != null
+              ? Icons.arrow_forward_ios_rounded
+              : Icons.link),
           onTap: () async {
             await Get.toNamed('/link/assign', arguments: link);
             onLinkAssigned(); // Llamar a la función de refrescar la lista

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_manager_application/domain/models/content.dart';
 import 'package:qr_manager_application/services/content_service.dart';
+import 'package:qr_manager_application/services/auth_service.dart';
 
 class ContentListPage extends StatefulWidget {
   const ContentListPage({super.key});
@@ -12,6 +13,7 @@ class ContentListPage extends StatefulWidget {
 
 class _ContentListPageState extends State<ContentListPage> {
   final TextEditingController _searchController = TextEditingController();
+  final AuthService authService = AuthService();
   final FireStoreContentService fireStoreContentService =
       FireStoreContentService();
   List<Content> _contents = [];
@@ -21,6 +23,7 @@ class _ContentListPageState extends State<ContentListPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     _fetchContents();
   }
 
@@ -148,7 +151,7 @@ class CustomContentItem extends StatelessWidget {
         ),
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 5),
-          leading: Container(
+          leading: SizedBox(
             width: 80,
             height: 80,
             child: CircleAvatar(

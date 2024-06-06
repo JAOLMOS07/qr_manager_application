@@ -18,6 +18,8 @@ class _ViewQrCodePageState extends State<ViewQrCodePage> {
   String selectedValue = 'flu';
   List<S2Choice<String>> options = [];
   final FireStoreContentService contentService = FireStoreContentService();
+  late List<Content> contents;
+
   final FireStoreLinkService linkService = FireStoreLinkService();
   bool _isLoading = true;
 
@@ -35,7 +37,7 @@ class _ViewQrCodePageState extends State<ViewQrCodePage> {
   }
 
   Future<void> _fetchContents() async {
-    List<Content> contents = await contentService.getContents();
+    contents = await contentService.getContents();
     setState(() {
       options = contents.map((content) {
         return S2Choice<String>(value: content.id, title: content.title);
@@ -46,67 +48,109 @@ class _ViewQrCodePageState extends State<ViewQrCodePage> {
 
   @override
   Widget build(BuildContext context) {
-    String qrData = "qradmin.com/${linkSelected.id}";
+    String qrData =
+        "https://qrmanagerdisplay.netlify.app/qr/${linkSelected.id}";
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Código QR: ${linkSelected.contentTitle ?? "Vacío"}'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: QrImageView(
-              data: qrData,
-              size: 280,
-              embeddedImageStyle: const QrEmbeddedImageStyle(
-                size: Size(100, 100),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Código QR',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            qrData,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[700],
-            ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              Clipboard.setData(ClipboardData(text: qrData));
-              Get.snackbar(
-                'Enlace copiado',
-                'El enlace se copió al portapapeles',
-              );
-            },
-            child: Text('Copiar Enlace'),
-          ),
-          const SizedBox(height: 20),
-          _isLoading
-              ? CircularProgressIndicator()
-              : SmartSelect<String>.single(
-                  title: 'Contenido',
-                  placeholder: "Asigna un contenido",
-                  selectedValue: selectedValue,
-                  choiceItems: options,
-                  onChange: (state) => {
-                    setState(() => selectedValue = state.value),
-                    linkSelected.contentId = state.value,
-                    linkSelected.contentTitle = state.title,
-                    linkService.updateLink(linkSelected)
-                  },
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(30.0),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(linkSelected.contentLogoUrl ?? ""),
+                    fit: BoxFit.cover,
+                  ),
+                  borderRadius: BorderRadius.circular(20.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 7,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
                 ),
-        ],
+                child: Container(
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 7,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: QrImageView(
+                    data: qrData,
+                    size: 280,
+                    embeddedImageStyle: const QrEmbeddedImageStyle(
+                      size: Size(100, 100),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Código QR',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: Text(
+                  qrData,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: qrData));
+                  Get.snackbar(
+                    'Enlace copiado',
+                    'El enlace se copió al portapapeles',
+                  );
+                },
+                child: Text('Copiar Enlace'),
+              ),
+              const SizedBox(height: 20),
+              _isLoading
+                  ? CircularProgressIndicator()
+                  : SmartSelect<String>.single(
+                      title: 'Contenido',
+                      placeholder: "Asigna un contenido",
+                      selectedValue: selectedValue,
+                      choiceItems: options,
+                      onChange: (state) => {
+                        setState(() => selectedValue = state.value),
+                        linkSelected.contentId = state.value,
+                        linkSelected.contentTitle = state.title,
+                        linkSelected.contentLogoUrl = contents
+                            .firstWhere((content) => content.id == state.value)
+                            .logoUrl,
+                        linkService.updateLink(linkSelected)
+                      },
+                    ),
+            ],
+          ),
+        ),
       ),
     );
   }

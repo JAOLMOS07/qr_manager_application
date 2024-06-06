@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qr_manager_application/services/auth_service.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -22,9 +24,7 @@ class LoginPage extends StatelessWidget {
                   width: 200,
                   height: 200,
                 ),
-                SizedBox(
-                  height: 0,
-                ), // Separación entre el logo y el formulario
+                SizedBox(height: 0), // Separación entre el logo y el formulario
                 LoginForm(), // Usamos directamente el formulario de inicio de sesión
               ],
             ),
@@ -35,8 +35,23 @@ class LoginPage extends StatelessWidget {
   }
 }
 
-class LoginForm extends StatelessWidget {
-  const LoginForm({Key? key});
+class LoginForm extends StatefulWidget {
+  const LoginForm({Key? key}) : super(key: key);
+
+  @override
+  _LoginFormState createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final AuthService authService = AuthService();
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,12 +80,14 @@ class LoginForm extends StatelessWidget {
               height: 30), // Aumento del espaciado entre los campos y el botón
           // Campos de entrada de texto
           TextField(
+            controller: _emailController,
             decoration: InputDecoration(
               hintText: 'Username',
             ),
           ),
           SizedBox(height: 20),
           TextField(
+            controller: _passwordController,
             decoration: InputDecoration(
               hintText: 'Password',
             ),
@@ -80,8 +97,13 @@ class LoginForm extends StatelessWidget {
               height: 60), // Aumento del espaciado entre los campos y el botón
           // Botones
           ElevatedButton(
-            onPressed: () {
-              Get.toNamed('/content/list');
+            onPressed: () async {
+              User? user = await authService.LogIn(
+                  _emailController.text, _passwordController.text);
+
+              if (user != null) {
+                Get.toNamed('/content/list');
+              } else {}
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 100),
@@ -104,10 +126,10 @@ class LoginForm extends StatelessWidget {
                   Get.toNamed('/register');
                 },
                 child: Text(
-                  "Sing up",
+                  "Sign up",
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.blue, // Color del texto "Sing up"
+                    color: Colors.blue, // Color del texto "Sign up"
                     decoration: TextDecoration
                         .underline, // Añade una línea debajo del texto
                   ),

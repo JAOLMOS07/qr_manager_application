@@ -42,6 +42,8 @@ dependencies:
   firebase_storage: ^11.7.7
   image_picker: ^1.1.2
   awesome_select: ^6.0.0
+  salomon_bottom_bar: ^3.3.2
+  firebase_auth: ^4.20.0
 
 dev_dependencies:
   flutter_test:

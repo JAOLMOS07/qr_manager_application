@@ -1,6 +1,7 @@
 class Link {
   String? contentId;
   String? contentTitle;
+  String? contentLogoUrl;
   String lastRenewalDate;
   int subscriptionType;
   bool active;
@@ -12,6 +13,7 @@ class Link {
   Link({
     this.contentId,
     this.contentTitle,
+    this.contentLogoUrl,
     required this.lastRenewalDate,
     required this.subscriptionType,
     required this.active,
@@ -25,6 +27,7 @@ class Link {
     return Link(
       contentId: json['contentId'],
       contentTitle: json['contentTitle'],
+      contentLogoUrl: json['contentLogoUrl'],
       lastRenewalDate: json['lastRenewalDate'],
       subscriptionType: json['subscriptionType'],
       active: json['active'],

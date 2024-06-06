@@ -1,5 +1,9 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:qr_manager_application/services/auth_service.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -24,10 +28,8 @@ class RegisterPage extends StatelessWidget {
                   width: 200,
                   height: 200,
                 ),
-                SizedBox(
-                  height: 0,
-                ), // Separación entre el logo y el formulario
-                LoginForm(), // Usamos directamente el formulario de inicio de sesión
+                SizedBox(height: 0), // Separación entre el logo y el formulario
+                RegisterForm(), // Usamos directamente el formulario de registro
               ],
             ),
           ),
@@ -37,13 +39,33 @@ class RegisterPage extends StatelessWidget {
   }
 }
 
-class LoginForm extends StatelessWidget {
-  const LoginForm({Key? key});
+class RegisterForm extends StatefulWidget {
+  const RegisterForm({Key? key}) : super(key: key);
+
+  @override
+  _RegisterFormState createState() => _RegisterFormState();
+}
+
+class _RegisterFormState extends State<RegisterForm> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _repeatPasswordController =
+      TextEditingController();
+  final AuthService authService = AuthService();
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _repeatPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 400,
+      height: 500,
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
@@ -67,24 +89,29 @@ class LoginForm extends StatelessWidget {
               height: 5), // Aumento del espaciado entre los campos y el botón
           // Campos de entrada de texto
           TextField(
+            controller: _nameController,
             decoration: InputDecoration(
               hintText: 'Name',
             ),
           ),
-
+          SizedBox(height: 20),
           TextField(
+            controller: _usernameController,
             decoration: InputDecoration(
               hintText: 'Username',
             ),
-            obscureText: true,
           ),
+          SizedBox(height: 20),
           TextField(
+            controller: _passwordController,
             decoration: InputDecoration(
               hintText: 'Password',
             ),
+            obscureText: true,
           ),
-
+          SizedBox(height: 20),
           TextField(
+            controller: _repeatPasswordController,
             decoration: InputDecoration(
               hintText: 'Repeat Password',
             ),
@@ -94,14 +121,18 @@ class LoginForm extends StatelessWidget {
               height: 40), // Aumento del espaciado entre los campos y el botón
           // Botones
           ElevatedButton(
-            onPressed: () {
-              Get.toNamed('/welcome');
+            onPressed: () async {
+              UserCredential? user = await authService.SingUp(
+                  _usernameController.text, _passwordController.text);
+              if (user != null) {
+                Get.toNamed('/content/list');
+              }
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 100),
             ),
             child: Text(
-              'Sing up',
+              'Sign up',
               style: TextStyle(fontSize: 15),
             ),
           ),
@@ -121,7 +152,7 @@ class LoginForm extends StatelessWidget {
                   "Log In",
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.blue, // Color del texto "Sing up"
+                    color: Colors.blue, // Color del texto "Sign up"
                     decoration: TextDecoration
                         .underline, // Añade una línea debajo del texto
                   ),

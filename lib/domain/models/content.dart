@@ -7,6 +7,7 @@ class Content {
   final String createdOn;
   final String lastModifiedOn;
   final String? deletedOn;
+  final Map<String, String> networks; // Agregar el campo networks
 
   Content({
     required this.id,
@@ -17,6 +18,7 @@ class Content {
     required this.createdOn,
     required this.lastModifiedOn,
     this.deletedOn,
+    required this.networks, // Inicializar el campo networks
   });
 
   factory Content.fromJson(Map<String, dynamic> json) {
@@ -31,6 +33,22 @@ class Content {
       createdOn: json['createdOn'] ?? '',
       lastModifiedOn: json['lastModifiedOn'] ?? '',
       deletedOn: json['deletedOn'] != null ? json['deletedOn'] ?? '' : null,
+      networks:
+          Map<String, String>.from(json['networks'] ?? {}), // Parsear networks
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'logoUrl': logoUrl,
+      'multimedia': multimedia,
+      'createdOn': createdOn,
+      'lastModifiedOn': lastModifiedOn,
+      'deletedOn': deletedOn,
+      'networks': networks, // Convertir networks a JSON
+    };
   }
 }

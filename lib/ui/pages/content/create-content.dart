@@ -24,6 +24,10 @@ class _AddContentPageState extends State<AddContentPage> {
       FireStoreContentService();
   bool _isLoading = false;
 
+  // Lista de redes sociales seleccionadas
+  List<String> selectedNetworks = [];
+  Map<String, TextEditingController> networkControllers = {};
+
   Future<void> selectImages() async {
     final List<XFile?> pickedImages = await getMultiImage();
     setState(() {
@@ -68,14 +72,20 @@ class _AddContentPageState extends State<AddContentPage> {
       }
 
       // Crear el contenido con las URLs obtenidas
+      Map<String, String> networks = {};
+      for (var network in selectedNetworks) {
+        networks[network] = networkControllers[network]!.text;
+      }
+
       final content = Content(
-        id: "",
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: title,
         description: description,
         logoUrl: logoUrl ?? '',
         multimedia: multimediaUrls,
         createdOn: Timestamp.now().toString(),
         lastModifiedOn: Timestamp.now().toString(),
+        networks: networks,
       );
 
       // Guardar el contenido en Firestore
@@ -84,9 +94,13 @@ class _AddContentPageState extends State<AddContentPage> {
       // Limpiar los campos después de enviar el formulario
       titleController.clear();
       descriptionController.clear();
+      for (var controller in networkControllers.values) {
+        controller.clear();
+      }
       setState(() {
         imageLogo = null;
         imagesMultimedia.clear();
+        selectedNetworks.clear();
         _isLoading = false;
       });
 
@@ -146,6 +160,56 @@ class _AddContentPageState extends State<AddContentPage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
+                    ),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: 'Agregar red social',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      items: ['Facebook', 'Instagram', 'YouTube', 'WhatsApp']
+                          .map((network) => DropdownMenuItem(
+                                value: network,
+                                child: Text(network),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        if (value != null &&
+                            !selectedNetworks.contains(value)) {
+                          setState(() {
+                            selectedNetworks.add(value);
+                            networkControllers[value] = TextEditingController();
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    Column(
+                      children: selectedNetworks.map((network) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: TextFormField(
+                            controller: networkControllers[network],
+                            decoration: InputDecoration(
+                              labelText: '$network URL',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () {
+                                  setState(() {
+                                    selectedNetworks.remove(network);
+                                    networkControllers.remove(network);
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
                     const SizedBox(height: 10),
                     imageLogo != null

@@ -1,26 +1,46 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:qr_manager_application/domain/models/link.dart';
+import 'package:qr_manager_application/services/auth_service.dart';
 
 class FireStoreLinkService {
+  final AuthService _authService = AuthService();
   final CollectionReference _linksCollection =
       FirebaseFirestore.instance.collection('links');
   Link? _selectedLink;
+
+  // Método para establecer el link seleccionado
   void setSelectedLink(Link link) {
     _selectedLink = link;
   }
 
+  // Método para obtener el link seleccionado
   Link? getSelectedLink() {
     return _selectedLink;
   }
 
-  // Método para obtener todos los links
+  // Método para obtener todos los links del usuario actual
   Future<List<Link>> getLinks() async {
-    QuerySnapshot querySnapshot = await _linksCollection.get();
-    return querySnapshot.docs.map((doc) {
-      return Link.fromJson(doc.data() as Map<String, dynamic>);
-    }).toList();
+    try {
+      User? currentUser = await _authService.getCurrentUser();
+      if (currentUser != null) {
+        QuerySnapshot querySnapshot = await _linksCollection
+            .where('userUID', isEqualTo: currentUser.uid)
+            .get();
+        return querySnapshot.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return Link.fromJson(data);
+        }).toList();
+      } else {
+        throw Exception("No user currently logged in");
+      }
+    } catch (e) {
+      print('Error getting links: $e');
+      return [];
+    }
   }
 
+  // Método para obtener un link por ID
   Future<Link?> getLinkById(String linkId) async {
     try {
       DocumentSnapshot documentSnapshot =
@@ -38,7 +58,15 @@ class FireStoreLinkService {
 
   // Método para agregar un nuevo link
   Future<void> addLink(Link link) async {
-    await _linksCollection.doc(link.id).set(link.toJson());
+    User? currentUser = await _authService.getCurrentUser();
+    if (currentUser != null) {
+      await _linksCollection.doc(link.id).set({
+        ...link.toJson(),
+        'userUID': currentUser.uid,
+      });
+    } else {
+      throw Exception("No user currently logged in");
+    }
   }
 
   // Método para actualizar un link existente
@@ -58,6 +86,7 @@ extension LinkExtension on Link {
     return {
       'contentId': contentId,
       'contentTitle': contentTitle,
+      'contentLogoUrl': contentLogoUrl,
       'lastRenewalDate': lastRenewalDate,
       'subscriptionType': subscriptionType,
       'active': active,
