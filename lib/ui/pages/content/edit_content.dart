@@ -6,15 +6,16 @@ import 'package:qr_manager_application/domain/models/content.dart';
 import 'package:qr_manager_application/services/firestore.dart';
 import 'package:qr_manager_application/services/content_service.dart';
 import 'package:qr_manager_application/services/select_image.dart';
+import 'package:get/get.dart';
 
-class AddContentPage extends StatefulWidget {
-  const AddContentPage({super.key});
+class EditContentPage extends StatefulWidget {
+  const EditContentPage({super.key});
 
   @override
-  _AddContentPageState createState() => _AddContentPageState();
+  _EditContentPageState createState() => _EditContentPageState();
 }
 
-class _AddContentPageState extends State<AddContentPage> {
+class _EditContentPageState extends State<EditContentPage> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   XFile? imageLogo;
@@ -23,6 +24,7 @@ class _AddContentPageState extends State<AddContentPage> {
   final FireStoreContentService fireStoreContentService =
       FireStoreContentService();
   bool _isLoading = false;
+  Content? content;
 
   // Lista de redes sociales seleccionadas
   List<String> selectedNetworks = [];
@@ -31,6 +33,25 @@ class _AddContentPageState extends State<AddContentPage> {
   // Lista de plantillas disponibles
   final List<String> templates = ['basic', 'profile'];
   String? selectedTemplate;
+
+  @override
+  void initState() {
+    super.initState();
+    content = Get.arguments as Content?;
+    if (content == null) {
+      Get.back(); // Si no se pasa contenido válido, volver atrás
+      return;
+    }
+
+    titleController.text = content!.title;
+    descriptionController.text = content!.description;
+    selectedTemplate = "";
+    selectedNetworks = content!.networks.keys.toList();
+    for (var network in selectedNetworks) {
+      networkControllers[network] =
+          TextEditingController(text: content!.networks[network]);
+    }
+  }
 
   Future<void> selectImages() async {
     final List<XFile?> pickedImages = await getMultiImage();
@@ -43,7 +64,7 @@ class _AddContentPageState extends State<AddContentPage> {
     return await file.readAsBytes();
   }
 
-  Future<void> createContent() async {
+  Future<void> updateContent() async {
     setState(() {
       _isLoading = true;
     });
@@ -52,8 +73,8 @@ class _AddContentPageState extends State<AddContentPage> {
     final String description = descriptionController.text;
 
     try {
-      // Subir la imagen del logo y obtener la URL
-      String? logoUrl;
+      // Subir la imagen del logo y obtener la URL si se ha cambiado
+      String? logoUrl = content!.logoUrl;
       if (imageLogo != null) {
         Uint8List logoData = await fileToUint8List(imageLogo!);
         logoUrl = await fireStoreService.uploadImage(
@@ -63,7 +84,7 @@ class _AddContentPageState extends State<AddContentPage> {
       }
 
       // Subir las imágenes multimedia y obtener sus URLs
-      List<String> multimediaUrls = [];
+      List<String> multimediaUrls = content!.multimedia;
       for (var image in imagesMultimedia) {
         Uint8List imageData = await fileToUint8List(image);
         String? url = await fireStoreService.uploadImage(
@@ -75,51 +96,43 @@ class _AddContentPageState extends State<AddContentPage> {
         }
       }
 
-      // Crear el contenido con las URLs obtenidas
+      // Actualizar las redes sociales
       Map<String, String> networks = {};
       for (var network in selectedNetworks) {
         networks[network] = networkControllers[network]!.text;
       }
 
-      final content = Content(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+      final updatedContent = Content(
+        id: content!.id,
         title: title,
         description: description,
         logoUrl: logoUrl ?? '',
         multimedia: multimediaUrls,
-        createdOn: Timestamp.now().toString(),
+        createdOn: content!.createdOn,
         lastModifiedOn: Timestamp.now().toString(),
         networks: networks,
         template: selectedTemplate ?? 'basic',
-        // Añadir la plantilla seleccionada
       );
 
-      // Guardar el contenido en Firestore
-      await fireStoreContentService.addContent(content);
+      // Guardar el contenido actualizado en Firestore
+      /* await fireStoreContentService.updateContent(updatedContent); */
 
-      // Limpiar los campos después de enviar el formulario
-      titleController.clear();
-      descriptionController.clear();
-      for (var controller in networkControllers.values) {
-        controller.clear();
-      }
       setState(() {
-        imageLogo = null;
-        imagesMultimedia.clear();
-        selectedNetworks.clear();
-        selectedTemplate = null;
         _isLoading = false;
       });
 
       // Mostrar mensaje de satisfacción
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Contenido creado con éxito'),
+          content: Text('Contenido actualizado con éxito'),
         ),
       );
+
+      // Volver a la página anterior
+      Get.back();
     } catch (e) {
-      // Manejo de errores (puedes mostrar un diálogo o snackbar con el error)
-      print('Error creating content: $e');
+      // Manejo de errores
+      print('Error updating content: $e');
       setState(() {
         _isLoading = false;
       });
@@ -127,7 +140,7 @@ class _AddContentPageState extends State<AddContentPage> {
       // Mostrar mensaje de error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al crear el contenido: $e'),
+          content: Text('Error al actualizar el contenido: $e'),
         ),
       );
     }
@@ -137,7 +150,7 @@ class _AddContentPageState extends State<AddContentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Crear contenido'),
+        title: const Text('Editar contenido'),
       ),
       body: _isLoading
           ? Center(
@@ -301,8 +314,7 @@ class _AddContentPageState extends State<AddContentPage> {
                     const SizedBox(height: 20),
                     Text(
                       'Seleccionar Plantilla:',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16),
                     ),
                     Column(
                       children: templates.map((template) {
@@ -320,7 +332,7 @@ class _AddContentPageState extends State<AddContentPage> {
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: createContent,
+                      onPressed: updateContent,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -329,7 +341,7 @@ class _AddContentPageState extends State<AddContentPage> {
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 12),
                         child: Text(
-                          'Crear Contenido',
+                          'Actualizar Contenido',
                           style: TextStyle(fontSize: 18),
                         ),
                       ),

@@ -35,6 +35,7 @@ class FireStoreContentService {
             id: doc.id,
             title: data['title'] ?? '',
             description: data['description'] ?? '',
+            template: data['template'] ?? '',
             logoUrl: data['logoUrl'] ?? '',
             multimedia: List<String>.from(data['multimedia'] ?? []),
             createdOn: data['createdOn']?.toString() ?? '',
@@ -53,16 +54,4 @@ class FireStoreContentService {
 }
 
 // Extensión para convertir un Content a un Map (JSON)
-extension ContentExtension on Content {
-  Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'description': description,
-      'logoUrl': logoUrl,
-      'multimedia': multimedia,
-      'createdOn': createdOn,
-      'lastModifiedOn': lastModifiedOn,
-      'networks': networks,
-    };
-  }
-}
+

@@ -171,7 +171,9 @@ class CustomContentItem extends StatelessWidget {
             style: TextStyle(fontSize: 14),
           ),
           trailing: Icon(Icons.arrow_forward_ios),
-          onTap: () {},
+          onTap: () {
+            Get.toNamed('/content/edit', arguments: content);
+          },
         ),
       ),
     );

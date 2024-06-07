@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:qr_manager_application/domain/models/link.dart';
 import 'package:qr_manager_application/services/link_service.dart';
 
@@ -34,6 +35,14 @@ class _LinkListPageState extends State<LinkListPage> {
     });
   }
 
+  Future<void> _deleteLink(Link link) async {
+    setState(() {
+      _isLoading = true;
+    });
+    await fireStoreLinkService.deleteLink(link.id);
+    await _fetchLinks();
+  }
+
   void _filterLinks(String query) {
     if (query.isEmpty) {
       setState(() {
@@ -49,6 +58,28 @@ class _LinkListPageState extends State<LinkListPage> {
         }).toList();
       });
     }
+  }
+
+  void _confirmDelete(BuildContext context, Link link) {
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.confirm,
+      title: "¿Estás seguro?",
+      text: '¿Quieres eliminar este link?',
+      confirmBtnText: 'Sí',
+      cancelBtnText: 'No',
+      showConfirmBtn: true,
+      showCancelBtn: true,
+      confirmBtnColor: Colors.green,
+      onConfirmBtnTap: () async {
+        Get.back(); // Cerrar el diálogo de confirmación
+        await _deleteLink(link);
+      },
+      onCancelBtnTap: () {
+        Get.back(); // Cerrar el diálogo de confirmación
+        _fetchLinks(); // Refrescar la lista de links
+      },
+    );
   }
 
   @override
@@ -104,9 +135,27 @@ class _LinkListPageState extends State<LinkListPage> {
                             : ListView.builder(
                                 itemCount: _links.length,
                                 itemBuilder: (context, index) {
-                                  return CustomLinkItem(
-                                    link: _links[index],
-                                    onLinkAssigned: _fetchLinks,
+                                  return Dismissible(
+                                    key: Key(_links[index].id),
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                      color: Colors.red,
+                                      alignment: Alignment.centerRight,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: const Icon(
+                                        Icons.delete,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    confirmDismiss: (direction) async {
+                                      _confirmDelete(context, _links[index]);
+                                      return false; // Previene la eliminación automática
+                                    },
+                                    child: CustomLinkItem(
+                                      link: _links[index],
+                                      onLinkAssigned: _fetchLinks,
+                                    ),
                                   );
                                 },
                               ),

@@ -4,6 +4,7 @@ class Content {
   final String description;
   final String logoUrl;
   final List<String> multimedia;
+  final String template;
   final String createdOn;
   final String lastModifiedOn;
   final String? deletedOn;
@@ -15,6 +16,7 @@ class Content {
     required this.description,
     required this.logoUrl,
     required this.multimedia,
+    required this.template,
     required this.createdOn,
     required this.lastModifiedOn,
     this.deletedOn,
@@ -26,6 +28,7 @@ class Content {
       id: json['id'] ?? '',
       title: json['title'] ?? '',
       description: json['description'] ?? '',
+      template: json['template'] ?? '',
       logoUrl: json['logoUrl'] ?? '',
       multimedia: (json['multimedia'] as List<dynamic>)
           .map((item) => item.toString())
@@ -48,7 +51,8 @@ class Content {
       'createdOn': createdOn,
       'lastModifiedOn': lastModifiedOn,
       'deletedOn': deletedOn,
-      'networks': networks, // Convertir networks a JSON
+      'networks': networks,
+      'template': template // Convertir networks a JSON
     };
   }
 }
