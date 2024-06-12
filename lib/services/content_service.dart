@@ -42,16 +42,21 @@ class FireStoreContentService {
             lastModifiedOn: data['lastModifiedOn']?.toString() ?? '',
             networks: Map<String, String>.from(data['networks'] ?? {}),
           );
+          /*  return Content.fromJson(data); */
         }).toList();
       } else {
         throw Exception("No user currently logged in");
       }
     } catch (e) {
-      print('Error getting contents: $e');
       return [];
     }
   }
+
+  Future<void> updateContent(Content content) async {
+    await _contentsCollection.doc(content.id).update(content.toJson());
+  }
 }
+
 
 // Extensión para convertir un Content a un Map (JSON)
 

@@ -115,7 +115,7 @@ class _EditContentPageState extends State<EditContentPage> {
       );
 
       // Guardar el contenido actualizado en Firestore
-      /* await fireStoreContentService.updateContent(updatedContent); */
+      await fireStoreContentService.updateContent(updatedContent);
 
       setState(() {
         _isLoading = false;

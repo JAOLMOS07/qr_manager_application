@@ -6,35 +6,35 @@ import 'package:qr_manager_application/domain/models/link.dart';
 import 'package:qr_manager_application/services/link_service.dart';
 
 class CreateQrCodePage extends StatefulWidget {
-  const CreateQrCodePage({Key? key}) : super(key: key);
+  const CreateQrCodePage({super.key});
 
   @override
   _CreateQrCodePageState createState() => _CreateQrCodePageState();
 }
 
 class _CreateQrCodePageState extends State<CreateQrCodePage> {
-  final List<S2Choice<String>> options = [
+  final List<S2Choice<String>> opciones = [
     S2Choice<String>(value: 'Anual', title: 'Anual'),
     S2Choice<String>(value: 'Mensual', title: 'Mensual'),
     S2Choice<String>(value: 'Vitalicio', title: 'Vitalicio')
   ];
   final FireStoreLinkService _fireStoreLinkService = FireStoreLinkService();
 
-  String selectedOption = 'Anual';
+  String opcionSeleccionada = 'Anual';
 
-  Map<String, String> prices = {
+  Map<String, String> precios = {
     'Anual': '\$100',
     'Mensual': '\$10',
     'Vitalicio': '\$500'
   };
 
-  Future<void> _createLink() async {
+  Future<void> _crearEnlace() async {
     final link = Link(
       contentId: null,
       contentTitle: null,
       lastRenewalDate: DateTime.now().toString(),
       subscriptionType:
-          options.indexWhere((element) => element.value == selectedOption),
+          opciones.indexWhere((element) => element.value == opcionSeleccionada),
       active: true,
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       createdOn: DateTime.now(),
@@ -49,7 +49,7 @@ class _CreateQrCodePageState extends State<CreateQrCodePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Generar QR Code'),
+        title: const Text('Generar Código QR'),
       ),
       body: Center(
         child: Padding(
@@ -68,15 +68,16 @@ class _CreateQrCodePageState extends State<CreateQrCodePage> {
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 2,
                       blurRadius: 7,
-                      offset: Offset(0, 3), // changes position of shadow
+                      offset:
+                          const Offset(0, 3), // Cambia la posición de la sombra
                     ),
                   ],
                 ),
                 child: QrImageView(
                   data: "https://qrmanagerdisplay.netlify.app",
                   size: 280,
-                  embeddedImageStyle: QrEmbeddedImageStyle(
-                    size: const Size(100, 100),
+                  embeddedImageStyle: const QrEmbeddedImageStyle(
+                    size: Size(100, 100),
                   ),
                 ),
               ),
@@ -92,17 +93,17 @@ class _CreateQrCodePageState extends State<CreateQrCodePage> {
               SmartSelect<String>.single(
                 title: 'Suscripción:',
                 placeholder: 'Elige un tipo de suscripción',
-                selectedValue: selectedOption,
-                choiceItems: options,
+                selectedValue: opcionSeleccionada,
+                choiceItems: opciones,
                 onChange: (state) =>
-                    setState(() => selectedOption = state.value),
+                    setState(() => opcionSeleccionada = state.value),
               ),
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Precio: ${prices[selectedOption]}',
+                    'Precio: ${precios[opcionSeleccionada]}',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey[700],
@@ -122,7 +123,7 @@ class _CreateQrCodePageState extends State<CreateQrCodePage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _createLink,
+                onPressed: _crearEnlace,
                 child: const Text('Enviar'),
               ),
             ],

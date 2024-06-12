@@ -65,7 +65,7 @@ class _LinkListPageState extends State<LinkListPage> {
       context: context,
       type: QuickAlertType.confirm,
       title: "¿Estás seguro?",
-      text: '¿Quieres eliminar este link?',
+      text: '¿Quieres eliminar este enlace?',
       confirmBtnText: 'Sí',
       cancelBtnText: 'No',
       showConfirmBtn: true,
@@ -77,7 +77,7 @@ class _LinkListPageState extends State<LinkListPage> {
       },
       onCancelBtnTap: () {
         Get.back(); // Cerrar el diálogo de confirmación
-        _fetchLinks(); // Refrescar la lista de links
+        _fetchLinks(); // Refrescar la lista de enlaces
       },
     );
   }
@@ -116,7 +116,7 @@ class _LinkListPageState extends State<LinkListPage> {
                       hintStyle: const TextStyle(
                         color: Color.fromARGB(184, 89, 123, 236),
                       ),
-                      hintText: "Buscar link",
+                      hintText: "Buscar enlace",
                       fillColor: const Color.fromARGB(255, 255, 255, 255),
                       prefixIcon: const Icon(Icons.search),
                     ),
@@ -171,7 +171,7 @@ class _LinkListPageState extends State<LinkListPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Get.toNamed('/link/create');
-          _fetchLinks(); // Refrescar la lista de links después de volver de la página de creación
+          _fetchLinks(); // Refrescar la lista de enlaces después de volver de la página de creación
         },
         child: const Icon(Icons.add),
       ),
@@ -208,18 +208,19 @@ class CustomLinkItem extends StatelessWidget {
             child: CircleAvatar(
               radius: 40,
               backgroundImage: NetworkImage(link.contentLogoUrl ??
-                  "https://firebasestorage.googleapis.com/v0/b/qr-manager-3dabf.appspot.com/o/white.png?alt=media&token=5d2d9dad-d2c7-4707-8c5f-3f698d1da352"), // Puede ser cualquier color o imagen según el link
+                  "https://firebasestorage.googleapis.com/v0/b/qr-manager-3dabf.appspot.com/o/white.png?alt=media&token=5d2d9dad-d2c7-4707-8c5f-3f698d1da352"), // Puede ser cualquier color o imagen según el enlace
               child: Container(
                 padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(129, 255, 255, 255),
+                  color: const Color.fromARGB(129, 255, 255, 255),
                   borderRadius: BorderRadius.circular(20.0),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 2,
                       blurRadius: 2,
-                      offset: Offset(0, 3), // changes position of shadow
+                      offset:
+                          const Offset(0, 3), // Cambia la posición de la sombra
                     ),
                   ],
                 ),
@@ -228,8 +229,8 @@ class CustomLinkItem extends StatelessWidget {
                       ? Icons.qr_code_2_outlined
                       : Icons.link,
                   color: link.contentId != null
-                      ? Color.fromARGB(255, 88, 88, 88)
-                      : Color.fromARGB(205, 35, 35, 35),
+                      ? const Color.fromARGB(255, 88, 88, 88)
+                      : const Color.fromARGB(205, 35, 35, 35),
                   size: 30,
                 ),
               ),
@@ -241,17 +242,19 @@ class CustomLinkItem extends StatelessWidget {
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
           subtitle: Text(
-            '${link.lastRenewalDate}',
+            link.lastRenewalDate,
             style: const TextStyle(fontSize: 10),
+            overflow: TextOverflow.ellipsis,
           ),
           trailing: Icon(link.contentId != null
               ? Icons.arrow_forward_ios_rounded
               : Icons.link),
           onTap: () async {
             await Get.toNamed('/link/assign', arguments: link);
-            onLinkAssigned(); // Llamar a la función de refrescar la lista
+            onLinkAssigned();
           },
         ),
       ),

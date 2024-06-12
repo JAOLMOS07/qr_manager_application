@@ -7,17 +7,6 @@ class FireStoreLinkService {
   final AuthService _authService = AuthService();
   final CollectionReference _linksCollection =
       FirebaseFirestore.instance.collection('links');
-  Link? _selectedLink;
-
-  // Método para establecer el link seleccionado
-  void setSelectedLink(Link link) {
-    _selectedLink = link;
-  }
-
-  // Método para obtener el link seleccionado
-  Link? getSelectedLink() {
-    return _selectedLink;
-  }
 
   // Método para obtener todos los links del usuario actual
   Future<List<Link>> getLinks() async {
@@ -35,7 +24,6 @@ class FireStoreLinkService {
         throw Exception("No user currently logged in");
       }
     } catch (e) {
-      print('Error getting links: $e');
       return [];
     }
   }

@@ -23,7 +23,6 @@ class _ContentListPageState extends State<ContentListPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     _fetchContents();
   }
 
@@ -75,7 +74,7 @@ class _ContentListPageState extends State<ContentListPage> {
                     onChanged: (value) {
                       _filterContents(value);
                     },
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color.fromARGB(251, 89, 123, 236),
                       fontWeight: FontWeight.w300,
                     ),
@@ -84,15 +83,15 @@ class _ContentListPageState extends State<ContentListPage> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       filled: true,
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                         color: Color.fromARGB(184, 89, 123, 236),
                       ),
                       hintText: "Buscar contenido",
-                      fillColor: Color.fromARGB(255, 255, 255, 255),
-                      prefixIcon: Icon(Icons.search),
+                      fillColor: const Color.fromARGB(255, 255, 255, 255),
+                      prefixIcon: const Icon(Icons.search),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Expanded(
                     child: Card(
                       elevation: 4,
@@ -102,7 +101,7 @@ class _ContentListPageState extends State<ContentListPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: _isLoading
-                            ? Center(child: CircularProgressIndicator())
+                            ? const Center(child: CircularProgressIndicator())
                             : ListView.builder(
                                 itemCount: _contents.length,
                                 itemBuilder: (context, index) {
@@ -135,9 +134,9 @@ class CustomContentItem extends StatelessWidget {
   final Content content;
 
   const CustomContentItem({
-    Key? key,
+    super.key,
     required this.content,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -146,11 +145,12 @@ class CustomContentItem extends StatelessWidget {
       child: Container(
         height: 100,
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 255, 255, 255),
+          color: const Color.fromARGB(255, 255, 255, 255),
           borderRadius: BorderRadius.circular(15),
         ),
         child: ListTile(
-          contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 5),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 16, horizontal: 5),
           leading: SizedBox(
             width: 80,
             height: 80,
@@ -161,16 +161,18 @@ class CustomContentItem extends StatelessWidget {
           ),
           title: Text(
             content.title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
           subtitle: Text(
             content.description,
-            style: TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: 14),
+            overflow: TextOverflow.ellipsis,
           ),
-          trailing: Icon(Icons.arrow_forward_ios),
+          trailing: const Icon(Icons.arrow_forward_ios),
           onTap: () {
             Get.toNamed('/content/edit', arguments: content);
           },

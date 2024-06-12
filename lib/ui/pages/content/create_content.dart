@@ -24,11 +24,9 @@ class _AddContentPageState extends State<AddContentPage> {
       FireStoreContentService();
   bool _isLoading = false;
 
-  // Lista de redes sociales seleccionadas
   List<String> selectedNetworks = [];
   Map<String, TextEditingController> networkControllers = {};
 
-  // Lista de plantillas disponibles
   final List<String> templates = ['basic', 'profile'];
   String? selectedTemplate;
 
@@ -52,7 +50,6 @@ class _AddContentPageState extends State<AddContentPage> {
     final String description = descriptionController.text;
 
     try {
-      // Subir la imagen del logo y obtener la URL
       String? logoUrl;
       if (imageLogo != null) {
         Uint8List logoData = await fileToUint8List(imageLogo!);
@@ -62,7 +59,6 @@ class _AddContentPageState extends State<AddContentPage> {
         );
       }
 
-      // Subir las imágenes multimedia y obtener sus URLs
       List<String> multimediaUrls = [];
       for (var image in imagesMultimedia) {
         Uint8List imageData = await fileToUint8List(image);
@@ -75,7 +71,6 @@ class _AddContentPageState extends State<AddContentPage> {
         }
       }
 
-      // Crear el contenido con las URLs obtenidas
       Map<String, String> networks = {};
       for (var network in selectedNetworks) {
         networks[network] = networkControllers[network]!.text;
@@ -91,13 +86,10 @@ class _AddContentPageState extends State<AddContentPage> {
         lastModifiedOn: Timestamp.now().toString(),
         networks: networks,
         template: selectedTemplate ?? 'basic',
-        // Añadir la plantilla seleccionada
       );
 
-      // Guardar el contenido en Firestore
       await fireStoreContentService.addContent(content);
 
-      // Limpiar los campos después de enviar el formulario
       titleController.clear();
       descriptionController.clear();
       for (var controller in networkControllers.values) {
@@ -111,20 +103,16 @@ class _AddContentPageState extends State<AddContentPage> {
         _isLoading = false;
       });
 
-      // Mostrar mensaje de satisfacción
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Contenido creado con éxito'),
         ),
       );
     } catch (e) {
-      // Manejo de errores (puedes mostrar un diálogo o snackbar con el error)
-      print('Error creating content: $e');
       setState(() {
         _isLoading = false;
       });
 
-      // Mostrar mensaje de error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al crear el contenido: $e'),
@@ -140,8 +128,8 @@ class _AddContentPageState extends State<AddContentPage> {
         title: const Text('Crear contenido'),
       ),
       body: _isLoading
-          ? Center(
-              child: const CircularProgressIndicator(),
+          ? const Center(
+              child: CircularProgressIndicator(),
             )
           : SingleChildScrollView(
               child: Padding(
@@ -205,7 +193,7 @@ class _AddContentPageState extends State<AddContentPage> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               suffixIcon: IconButton(
-                                icon: Icon(Icons.delete),
+                                icon: const Icon(Icons.delete),
                                 onPressed: () {
                                   setState(() {
                                     selectedNetworks.remove(network);
@@ -299,7 +287,7 @@ class _AddContentPageState extends State<AddContentPage> {
                       }).toList(),
                     ),
                     const SizedBox(height: 20),
-                    Text(
+                    const Text(
                       'Seleccionar Plantilla:',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

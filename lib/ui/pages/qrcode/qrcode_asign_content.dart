@@ -9,12 +9,14 @@ import 'package:qr_manager_application/domain/models/link.dart';
 import 'package:qr_manager_application/services/link_service.dart';
 
 class ViewQrCodePage extends StatefulWidget {
+  const ViewQrCodePage({super.key});
+
   @override
   _ViewQrCodePageState createState() => _ViewQrCodePageState();
 }
 
 class _ViewQrCodePageState extends State<ViewQrCodePage> {
-  Link linkSelected = Get.arguments;
+  late Link linkSelected;
   String selectedValue = 'flu';
   List<S2Choice<String>> options = [];
   final FireStoreContentService contentService = FireStoreContentService();
@@ -26,6 +28,7 @@ class _ViewQrCodePageState extends State<ViewQrCodePage> {
   @override
   void initState() {
     super.initState();
+    linkSelected = Get.arguments;
     _initializeSelectedValue();
     _fetchContents();
   }
@@ -74,7 +77,8 @@ class _ViewQrCodePageState extends State<ViewQrCodePage> {
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 2,
                       blurRadius: 7,
-                      offset: Offset(0, 3), // changes position of shadow
+                      offset:
+                          const Offset(0, 3), // Cambia la posición de la sombra
                     ),
                   ],
                 ),
@@ -88,7 +92,8 @@ class _ViewQrCodePageState extends State<ViewQrCodePage> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 2,
                         blurRadius: 7,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset: const Offset(
+                            0, 3), // Cambia la posición de la sombra
                       ),
                     ],
                   ),
@@ -128,11 +133,11 @@ class _ViewQrCodePageState extends State<ViewQrCodePage> {
                     'El enlace se copió al portapapeles',
                   );
                 },
-                child: Text('Copiar Enlace'),
+                child: const Text('Copiar Enlace'),
               ),
               const SizedBox(height: 20),
               _isLoading
-                  ? CircularProgressIndicator()
+                  ? const CircularProgressIndicator()
                   : SmartSelect<String>.single(
                       title: 'Contenido',
                       placeholder: "Asigna un contenido",
